@@ -5,7 +5,6 @@ import com.datpham.foodorder.entities.Users;
 import com.datpham.foodorder.payload.LoginData;
 import com.datpham.foodorder.payload.ResponseData;
 import com.datpham.foodorder.payload.SignupData;
-import com.datpham.foodorder.repository.RoleRepository;
 import com.datpham.foodorder.repository.UserRepository;
 import com.datpham.foodorder.security.JwtUtilities;
 import com.datpham.foodorder.service.LoginService;
@@ -72,4 +71,5 @@ public class LoginController {
 
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
+
 }

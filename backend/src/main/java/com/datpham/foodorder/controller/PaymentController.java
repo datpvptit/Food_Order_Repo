@@ -1,9 +1,8 @@
 package com.datpham.foodorder.controller;
 
-
-import com.datpham.foodorder.dto.OrderDTO;
+import com.datpham.foodorder.dto.PaymentDTO;
 import com.datpham.foodorder.payload.ResponseData;
-import com.datpham.foodorder.service.OrderService;
+import com.datpham.foodorder.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +11,16 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/payment")
 @RequiredArgsConstructor
-public class OrderController {
-    private final OrderService orderService;
+public class PaymentController {
+    private final PaymentService paymentService;
 
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/add")
-    public ResponseEntity<?> addOrder(@RequestBody OrderDTO orderDTO){
-        ResponseData responseData = orderService.addOrder(orderDTO);
-        if(responseData != null){
-            responseData.setSuccess(true);
-        }else{
-            responseData.setData("Can't add the order");
-        }
+    public ResponseEntity<?> addOrder(@RequestBody PaymentDTO paymentDTO){
+        ResponseData responseData = new ResponseData();
+        responseData.setSuccess(paymentService.addPayment(paymentDTO));
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 }

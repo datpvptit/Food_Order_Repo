@@ -1,8 +1,12 @@
 package com.datpham.foodorder.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity(name="rating_food")
+@Getter
+@Setter
 public class RatingFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,44 +25,4 @@ public class RatingFood {
 
     @Column(name = "rate_point")
     private int ratePoint;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users user) {
-        this.user = user;
-    }
-
-    public Food getFood() {
-        return food;
-    }
-
-    public void setFood(Food food) {
-        this.food = food;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public int getRatePoint() {
-        return ratePoint;
-    }
-
-    public void setRatePoint(int ratePoint) {
-        this.ratePoint = ratePoint;
-    }
 }

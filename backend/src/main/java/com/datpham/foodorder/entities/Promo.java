@@ -1,10 +1,14 @@
 package com.datpham.foodorder.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 
 @Entity(name="promo")
+@Setter
+@Getter
 public class Promo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,36 +24,7 @@ public class Promo {
     private Date startDate;
     @Column(name = "end_date")
     private Date endDate;
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
-    public int getPercent() {
-        return percent;
-    }
-    public void setPercent(int percent) {
-        this.percent = percent;
-    }
-    public Date getStartDate() {
-        return startDate;
-    }
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-    public Date getEndDate() {
-        return endDate;
-    }
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+
 
 
 }

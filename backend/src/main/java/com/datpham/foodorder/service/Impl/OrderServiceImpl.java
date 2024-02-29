@@ -48,7 +48,6 @@ public class OrderServiceImpl implements OrderService {
             }
             order1.setTotalPrice(totalPrice);
             order1.setTimeServe(maxTimeServe);
-            order1.setPayStatus(false);
             orderRepository.save(order1);
 
             order1.setUser(null);

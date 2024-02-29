@@ -31,9 +31,10 @@ public class Order {
     @Column(name = "total_price")
     private double totalPrice;
 
-    @Column(name = "pay_status")
-    private boolean payStatus;
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> listOrderItem;
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
 }
