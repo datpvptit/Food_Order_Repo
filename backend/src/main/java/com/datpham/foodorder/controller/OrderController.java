@@ -28,4 +28,17 @@ public class OrderController {
         }
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('SUPERADMIN')")
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAllOrder(){
+        ResponseData responseData = new ResponseData();
+        responseData.setData(orderService.getAll());
+        if(responseData.getData() != null){
+            responseData.setSuccess(true);
+        }else{
+            responseData.setDesc("Can't get the order list");
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
 }

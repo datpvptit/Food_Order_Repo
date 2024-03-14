@@ -29,5 +29,6 @@ public interface FoodService {
                         String category_name);
     boolean deleteFood(int id);
 
+    FoodDTO getById(int id);
     List<FoodDTO> getAll();
 }

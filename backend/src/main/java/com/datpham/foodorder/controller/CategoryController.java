@@ -1,6 +1,7 @@
 package com.datpham.foodorder.controller;
 
 import com.datpham.foodorder.payload.ResponseData;
+import com.datpham.foodorder.payload.request.CategoryReponse;
 import com.datpham.foodorder.service.CategoryService;
 import com.datpham.foodorder.service.FoodService;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,11 @@ public class CategoryController {
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<?> addCategory(@RequestParam String name){
+    public ResponseEntity<?> addCategory(@RequestBody CategoryReponse categoryReponse){
         ResponseData responseData = new ResponseData();
-        boolean isSuccess = categoryService.addCateGory(name);
+        boolean isSuccess = categoryService.addCateGory(categoryReponse.getName());
         if(isSuccess){
-            responseData.setData(categoryService.findByName(name));
+            responseData.setData(categoryService.findByName(categoryReponse.getName()));
             responseData.setSuccess(true);
         }else{
             responseData.setData("Can't add the category");
@@ -31,12 +32,12 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    @PostMapping("/update")
-    public ResponseEntity<?> updateCategory(@RequestParam String name, @RequestParam String newName){
+    @PutMapping("/update")
+    public ResponseEntity<?> updateCategory(@RequestBody CategoryReponse categoryReponse){
         ResponseData responseData = new ResponseData();
-        boolean isSuccess = categoryService.updateCategory(name, newName);
+        boolean isSuccess = categoryService.updateCategory(categoryReponse.getName(), categoryReponse.getNewName());
         if(isSuccess){
-            responseData.setData(categoryService.findByName(name));
+            responseData.setData(categoryService.findByName(categoryReponse.getName()));
             responseData.setSuccess(true);
         }else{
             responseData.setData("Can't update the category");
@@ -45,12 +46,12 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteCategory(@RequestParam String name){
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteCategory(@RequestBody CategoryReponse categoryReponse){
         ResponseData responseData = new ResponseData();
-        boolean isSuccess = categoryService.deleteCategory(name);
+        boolean isSuccess = categoryService.deleteCategory(categoryReponse.getName());
         if(isSuccess){
-            responseData.setData("Delete category " + name + "successfully !");
+            responseData.setData("Delete category " + categoryReponse.getName() + "successfully !");
             responseData.setSuccess(true);
         }else{
             responseData.setData("Can't delete the category");

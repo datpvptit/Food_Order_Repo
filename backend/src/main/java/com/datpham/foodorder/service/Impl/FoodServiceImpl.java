@@ -90,6 +90,22 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
+    public FoodDTO getById(int id) {
+        FoodDTO foodDTO = new FoodDTO();
+        Food food = foodRepository.findFoodById(id);
+        if(food == null){
+            return null;
+        }
+        foodDTO.setId(food.getId());
+        foodDTO.setTitle(food.getTitle());
+        foodDTO.setImage(food.getImage());
+        foodDTO.setMaterial(food.getMaterial());
+        foodDTO.setPrice(food.getPrice());
+        foodDTO.setDetail(food.getDetail());
+        return foodDTO;
+    }
+
+    @Override
     public List<FoodDTO> getAll() {
 
         List<Category> categoryList = categoryRepository.findAll();

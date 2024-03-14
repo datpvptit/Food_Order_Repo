@@ -63,8 +63,8 @@ public class FoodController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteFood(@RequestParam int id){
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteFood(@PathVariable(name = "id") int id){
         ResponseData responseData = new ResponseData();
         boolean isSuccess = foodService.deleteFood(id);
         if(isSuccess){
@@ -77,7 +77,7 @@ public class FoodController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    @PostMapping ("/getAll")
+    @GetMapping ("/getAll")
     public ResponseEntity<?> getAllCategory(){
         ResponseData responseData = new ResponseData();
         List<FoodDTO> foodDTOList = foodService.getAll();
@@ -86,6 +86,19 @@ public class FoodController {
             responseData.setSuccess(true);
         }else{
             responseData.setData("Can't add the category");
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    @GetMapping ("/get-detail/{id}")
+    public ResponseEntity<?> getAllCategory(@PathVariable(name = "id") int id){
+        ResponseData responseData = new ResponseData();
+       FoodDTO foodDTO = foodService.getById(id);
+        if(foodDTO != null){
+            responseData.setData(foodDTO);
+            responseData.setSuccess(true);
+        }else{
+            responseData.setData("Can't get food infor detail");
         }
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }

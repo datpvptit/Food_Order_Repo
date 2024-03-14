@@ -10,5 +10,6 @@ public class ResponseData {
     private int id;
     private boolean isSuccess = false;
     private String desc;
+    private String title;
     private Object data;
 }

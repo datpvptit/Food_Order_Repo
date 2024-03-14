@@ -52,7 +52,7 @@ public class SpringSecurityConfig {
             .and()
             .authorizeHttpRequests()
             .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-            .requestMatchers("/user/**", "/home/**").permitAll()
+            .requestMatchers("/user/**", "/home/**", "/food/**").permitAll()
             .anyRequest().authenticated();
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -24,6 +24,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     @Override
+    @Transactional
     public boolean addCateGory(String name) {
         Category category = new Category();
         category.setNameCate(name);
@@ -47,9 +48,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDTO> getCategoryHomePage() {
-        PageRequest pageRequest = PageRequest.of(0, 6);
         List<CategoryDTO> categoryDTOList = new ArrayList<>();
-        Page<Category> categoryList = categoryRepository.findAll(pageRequest);
+        List<Category> categoryList = categoryRepository.findAll();
         for (Category category : categoryList){
             CategoryDTO categoryDTO = new CategoryDTO();
             categoryDTO.setName(category.getNameCate());
@@ -73,6 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public boolean updateCategory(String name, String newName) {
         boolean isSuccess = false;
 
@@ -91,6 +92,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public boolean deleteCategory(String name) {
         boolean isSuccess = false;
 

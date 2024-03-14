@@ -1,8 +1,11 @@
 package com.datpham.foodorder.service.Impl;
 
 import com.datpham.foodorder.Keys.IdOrderDetail;
+import com.datpham.foodorder.dto.FoodDTO;
 import com.datpham.foodorder.dto.OrderDTO;
 import com.datpham.foodorder.dto.OrderItemDTO;
+import com.datpham.foodorder.entities.Category;
+import com.datpham.foodorder.entities.Food;
 import com.datpham.foodorder.entities.Order;
 import com.datpham.foodorder.entities.OrderItem;
 import com.datpham.foodorder.payload.ResponseData;
@@ -27,13 +30,13 @@ public class OrderServiceImpl implements OrderService {
     private final FoodRepository foodRepository;
     private final UserRepository userRepository;
     @Override
+    @Transactional
     public ResponseData addOrder(OrderDTO orderDTO) {
         ResponseData responseData = new ResponseData();
         try {
             int maxTimeServe = 0;
             int totalPrice = 0;
             Order order = new Order();
-            order.setUser(userRepository.findById(orderDTO.getUserId()));
             Order order1 = orderRepository.save(order);
 
             for(OrderItemDTO orderItemDTO : orderDTO.getOrderItemDTOList()){
@@ -48,14 +51,10 @@ public class OrderServiceImpl implements OrderService {
             }
             order1.setTotalPrice(totalPrice);
             order1.setTimeServe(maxTimeServe);
+            order1.setUser(userRepository.findById(orderDTO.getUserId()));
             orderRepository.save(order1);
 
-            order1.setUser(null);
-
-            responseData.setData(order1);
             responseData.setSuccess(true);
-
-
 
             return responseData;
 
@@ -63,5 +62,32 @@ public class OrderServiceImpl implements OrderService {
             System.out.println("Fail to add order");
         }
         return null;
+    }
+
+    @Override
+    public List<OrderDTO> getAll() {
+
+        List<Order> orderList = orderRepository.findAll();
+        if(orderList.isEmpty()){
+            return null;
+        }
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+        for (Order order  : orderList){
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setUserId(order.getUser().getId());
+            orderDTO.setTotalPrice(order.getTotalPrice());
+            List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
+            for(OrderItem orderItem : order.getListOrderItem()){
+                OrderItemDTO orderItemDTO = new OrderItemDTO();
+                orderItemDTO.setFoodID(orderItem.getFood().getId());
+                orderItemDTO.setNumber(orderItem.getNumber());
+                orderItemDTOList.add(orderItemDTO);
+            }
+            orderDTO.setOrderItemDTOList(orderItemDTOList);
+            orderDTOList.add(orderDTO);
+        }
+
+        return orderDTOList;
+
     }
 }
