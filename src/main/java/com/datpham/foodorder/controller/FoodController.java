@@ -42,7 +42,7 @@ public class FoodController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<?> updateFood(@RequestParam int id,
                                         @RequestParam MultipartFile file,
                                         @RequestParam String title,
@@ -63,7 +63,7 @@ public class FoodController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteFood(@PathVariable(name = "id") int id){
         ResponseData responseData = new ResponseData();
         boolean isSuccess = foodService.deleteFood(id);

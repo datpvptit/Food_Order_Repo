@@ -4,15 +4,12 @@ import com.datpham.foodorder.Keys.IdOrderDetail;
 import com.datpham.foodorder.dto.FoodDTO;
 import com.datpham.foodorder.dto.OrderDTO;
 import com.datpham.foodorder.dto.OrderItemDTO;
-import com.datpham.foodorder.entities.Category;
-import com.datpham.foodorder.entities.Food;
-import com.datpham.foodorder.entities.Order;
-import com.datpham.foodorder.entities.OrderItem;
+import com.datpham.foodorder.entities.*;
+import com.datpham.foodorder.payload.Reponse.OrderItemDetailRespone;
+import com.datpham.foodorder.payload.Reponse.OrderResponse;
+import com.datpham.foodorder.payload.Reponse.OrderResponseDetail;
 import com.datpham.foodorder.payload.ResponseData;
-import com.datpham.foodorder.repository.FoodRepository;
-import com.datpham.foodorder.repository.OrderItemRepository;
-import com.datpham.foodorder.repository.OrderRepository;
-import com.datpham.foodorder.repository.UserRepository;
+import com.datpham.foodorder.repository.*;
 import com.datpham.foodorder.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final FoodRepository foodRepository;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
     @Override
     @Transactional
     public ResponseData addOrder(OrderDTO orderDTO) {
@@ -52,10 +51,9 @@ public class OrderServiceImpl implements OrderService {
             order1.setTotalPrice(totalPrice);
             order1.setTimeServe(maxTimeServe);
             order1.setUser(userRepository.findById(orderDTO.getUserId()));
-            orderRepository.save(order1);
 
             responseData.setSuccess(true);
-
+            responseData.setDesc("" + order1.getId());
             return responseData;
 
         }catch (Exception e){
@@ -65,29 +63,83 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getAll() {
+    public List<OrderResponse> getAllToServe() {
 
+        List<Order> orderList = orderRepository.findAllByStatusIsFalse();
+        if(orderList.isEmpty()){
+            return null;
+        }
+        List<OrderResponse> orderResponseList = new ArrayList<>();
+        for(Order order : orderList){
+            OrderResponse orderResponse = new OrderResponse();
+            if(order.getPayment() != null){
+                orderResponse.setCusName(order.getPayment().getCustomerName());
+                orderResponse.setCustomer_phone_number(order.getPayment().getCustomerPhoneNumber());
+            }else {
+                orderResponse.setCusName("Unknown");
+                orderResponse.setCustomer_phone_number("Unknown");
+            }
+            orderResponse.setTotalPrice(order.getTotalPrice());
+            orderResponse.setTime(order.getCreateDate());
+
+            orderResponse.setStatus(order.isStatus());
+            orderResponse.setIs_pay(order.getPayment() != null);
+            orderResponseList.add(orderResponse);
+        }
+        return orderResponseList;
+
+    }
+
+    @Override
+    public OrderResponseDetail getDetail(Integer id) {
+        OrderResponseDetail orderResponseDetail = new OrderResponseDetail();
+        Order order = orderRepository.getOrderById(id);
+        if(order == null){
+            return null;
+        }
+        List<OrderItemDetailRespone> itemDetailResponeList = new ArrayList<>();
+        orderResponseDetail.setUserName(order.getUser().getFulname());
+        orderResponseDetail.setTotalPrice(order.getTotalPrice());
+        orderResponseDetail.setTime(order.getCreateDate());
+        orderResponseDetail.setStatus(order.isStatus());
+        orderResponseDetail.setIs_pay(order.getPayment() != null);
+
+        for(OrderItem orderItem : order.getListOrderItem()){
+            OrderItemDetailRespone orderItemDetailRespone = new OrderItemDetailRespone();
+            orderItemDetailRespone.setFoodName(orderItem.getFood().getTitle());
+            orderItemDetailRespone.setQuanity(orderItem.getNumber());
+            orderItemDetailRespone.setImage(orderItem.getFood().getImage());
+            itemDetailResponeList.add(orderItemDetailRespone);
+        }
+        orderResponseDetail.setDetailResponeList(itemDetailResponeList);
+
+        return orderResponseDetail;
+    }
+
+    @Override
+    public List<OrderResponse> getAll() {
         List<Order> orderList = orderRepository.findAll();
         if(orderList.isEmpty()){
             return null;
         }
-        List<OrderDTO> orderDTOList = new ArrayList<>();
-        for (Order order  : orderList){
-            OrderDTO orderDTO = new OrderDTO();
-            orderDTO.setUserId(order.getUser().getId());
-            orderDTO.setTotalPrice(order.getTotalPrice());
-            List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
-            for(OrderItem orderItem : order.getListOrderItem()){
-                OrderItemDTO orderItemDTO = new OrderItemDTO();
-                orderItemDTO.setFoodID(orderItem.getFood().getId());
-                orderItemDTO.setNumber(orderItem.getNumber());
-                orderItemDTOList.add(orderItemDTO);
+        List<OrderResponse> orderResponseList = new ArrayList<>();
+        for(Order order : orderList){
+            OrderResponse orderResponse = new OrderResponse();
+            if(order.getPayment() != null){
+                orderResponse.setCusName(order.getPayment().getCustomerName());
+                orderResponse.setCustomer_phone_number(order.getPayment().getCustomerPhoneNumber());
+            }else {
+                orderResponse.setCusName("Unknown");
+                orderResponse.setCustomer_phone_number("Unknown");
             }
-            orderDTO.setOrderItemDTOList(orderItemDTOList);
-            orderDTOList.add(orderDTO);
+            orderResponse.setUserName(order.getUser().getFulname());
+            orderResponse.setTotalPrice(order.getTotalPrice());
+            orderResponse.setTime(order.getCreateDate());
+
+            orderResponse.setStatus(order.isStatus());
+            orderResponse.setIs_pay(order.getPayment() != null);
+            orderResponseList.add(orderResponse);
         }
-
-        return orderDTOList;
-
+        return orderResponseList;
     }
 }

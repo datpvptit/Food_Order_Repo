@@ -32,6 +32,8 @@ public class Order {
     @Column(name = "total_price")
     private double totalPrice;
 
+    @Column(name = "status")
+    private boolean status;
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> listOrderItem;

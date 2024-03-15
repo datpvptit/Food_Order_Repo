@@ -41,4 +41,17 @@ public class OrderController {
         }
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('SUPERADMIN')")
+    @GetMapping("/get-detail/{id}")
+    public ResponseEntity<?> getDetail(@PathVariable(name = "id") Integer id){
+        ResponseData responseData = new ResponseData();
+        responseData.setData(orderService.getDetail(id));
+        if(responseData.getData() != null){
+            responseData.setSuccess(true);
+        }else{
+            responseData.setDesc("Can't get the order list");
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
 }
