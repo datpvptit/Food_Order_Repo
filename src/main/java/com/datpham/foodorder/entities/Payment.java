@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity(name="payment")
 @Setter
 @Getter
@@ -16,8 +18,19 @@ public class Payment {
     @Column(name="method")
     private String method;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
+    @Column(name="customer_name")
+    private String customerName;
+
+    @Column(name="customer_email")
+    private String customerEmail;
+
+    @Column(name="customer_phone_number")
+    private String customerPhoneNumber;
+
+    @Column(name="total_price")
+    private Double totalPrice;
+
+    @OneToMany(mappedBy = "payment")
+    private List<Order> orderList;
 
 }

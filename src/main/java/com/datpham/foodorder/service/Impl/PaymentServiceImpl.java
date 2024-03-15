@@ -1,6 +1,7 @@
 package com.datpham.foodorder.service.Impl;
 
 import com.datpham.foodorder.dto.PaymentDTO;
+import com.datpham.foodorder.entities.Order;
 import com.datpham.foodorder.entities.Payment;
 import com.datpham.foodorder.repository.OrderRepository;
 import com.datpham.foodorder.repository.PaymentRepository;
@@ -16,13 +17,23 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     @Override
+    @Transactional
     public boolean addPayment(PaymentDTO paymentDTO) {
         try {
             Payment payment = new Payment();
-            payment.setOrder(orderRepository.getOrderById(paymentDTO.getOrderID()));
             payment.setMethod(paymentDTO.getMethod());
+            payment.setCustomerName(paymentDTO.getCustomerName());
+            payment.setCustomerEmail(paymentDTO.getCustomerEmail());
+            payment.setTotalPrice(paymentDTO.getTotalPrice());
+            payment.setCustomerPhoneNumber(paymentDTO.getCustomerPhoneNumber());
+            payment = paymentRepository.save(payment);
+            for(int orderID : paymentDTO.getOrderIDList()){
+                Order order = orderRepository.getOrderById(orderID);
+                order.setPayment(payment);
+                orderRepository.save(order);
+            }
 
-            paymentRepository.save(payment);
+
         } catch (Exception e){
             System.out.println("Error " + e.getMessage());
         }

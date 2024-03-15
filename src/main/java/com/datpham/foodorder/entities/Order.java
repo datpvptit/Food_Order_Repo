@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity(name="orders")
@@ -23,7 +24,7 @@ public class Order {
     private Restaurant restaurant;
 
     @Column(name = "create_date")
-    private Date createDate;
+    private LocalDateTime createDate;
 
     @Column(name = "time_serve")
     private int timeServe;
@@ -35,6 +36,11 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> listOrderItem;
 
-    @OneToOne(mappedBy = "order")
+    @ManyToOne
+    @JoinColumn(name="pay_id")
     private Payment payment;
+    @PrePersist
+    void create(){
+        this.createDate = LocalDateTime.now();
+    }
 }

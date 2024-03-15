@@ -19,7 +19,7 @@ import java.nio.file.StandardCopyOption;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
-    private final String rootPath = "C:\\Users\\Admin\\Documents\\Project\\Food_Order_Repo\\backend\\src\\main\\resources\\static\\";
+    private final String rootPath = "C:\\Users\\Admin\\Documents\\Project\\Food_Order_BE\\src\\main\\resources\\static";
     private Path root;
     private void init(String target) {
         try {
