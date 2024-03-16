@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface OrderService {
     ResponseData addOrder (OrderDTO orderDTO);
-    List<OrderResponse> getAllToServe();
+    List<OrderResponseDetail> getAllToServe();
+    Boolean serveOrder(Integer id);
     OrderResponseDetail getDetail(Integer id);
     List<OrderResponse> getAll();
 }

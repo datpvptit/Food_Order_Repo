@@ -63,31 +63,54 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponse> getAllToServe() {
+    public List<OrderResponseDetail> getAllToServe() {
 
         List<Order> orderList = orderRepository.findAllByStatusIsFalse();
         if(orderList.isEmpty()){
             return null;
         }
-        List<OrderResponse> orderResponseList = new ArrayList<>();
+        List<OrderResponseDetail> orderResponseDetailList = new ArrayList<>();
         for(Order order : orderList){
-            OrderResponse orderResponse = new OrderResponse();
+            OrderResponseDetail orderResponseDetail = new OrderResponseDetail();
             if(order.getPayment() != null){
-                orderResponse.setCusName(order.getPayment().getCustomerName());
-                orderResponse.setCustomer_phone_number(order.getPayment().getCustomerPhoneNumber());
+                orderResponseDetail.setCusName(order.getPayment().getCustomerName());
+                orderResponseDetail.setCustomer_phone_number(order.getPayment().getCustomerPhoneNumber());
             }else {
-                orderResponse.setCusName("Unknown");
-                orderResponse.setCustomer_phone_number("Unknown");
+                orderResponseDetail.setCusName("Unknown");
+                orderResponseDetail.setCustomer_phone_number("Unknown");
             }
-            orderResponse.setTotalPrice(order.getTotalPrice());
-            orderResponse.setTime(order.getCreateDate());
+            orderResponseDetail.setId(order.getId());
+            orderResponseDetail.setTotalPrice(order.getTotalPrice());
+            orderResponseDetail.setTime(order.getCreateDate());
+            orderResponseDetail.setStatus(order.isStatus());
+            orderResponseDetail.setIs_pay(order.getPayment() != null);
 
-            orderResponse.setStatus(order.isStatus());
-            orderResponse.setIs_pay(order.getPayment() != null);
-            orderResponseList.add(orderResponse);
+            List<OrderItemDetailRespone> itemDetailResponeList = new ArrayList<>();
+            for(OrderItem orderItem : order.getListOrderItem()){
+                OrderItemDetailRespone orderItemDetailRespone = new OrderItemDetailRespone();
+                orderItemDetailRespone.setFoodName(orderItem.getFood().getTitle());
+                orderItemDetailRespone.setQuanity(orderItem.getNumber());
+                orderItemDetailRespone.setImage(orderItem.getFood().getImage());
+                itemDetailResponeList.add(orderItemDetailRespone);
+            }
+            orderResponseDetail.setDetailResponeList(itemDetailResponeList);
+            orderResponseDetailList.add(orderResponseDetail);
         }
-        return orderResponseList;
+        return orderResponseDetailList;
 
+    }
+
+    @Override
+    @Transactional
+    public Boolean serveOrder(Integer id) {
+        try{
+            Order order = orderRepository.getOrderById(id);
+            order.setStatus(true);
+            orderRepository.save(order);
+            return true;
+        }catch (RuntimeException e){
+            throw  new RuntimeException("Can't serve this order");
+        }
     }
 
     @Override
@@ -132,6 +155,7 @@ public class OrderServiceImpl implements OrderService {
                 orderResponse.setCusName("Unknown");
                 orderResponse.setCustomer_phone_number("Unknown");
             }
+            orderResponse.setId(order.getId());
             orderResponse.setUserName(order.getUser().getFulname());
             orderResponse.setTotalPrice(order.getTotalPrice());
             orderResponse.setTime(order.getCreateDate());

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class OrderResponse {
+    private Integer id;
     private String userName;
     private String cusName;
     private LocalDateTime time;

@@ -27,7 +27,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public boolean checkLogin(String email, String password) {
         Users user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return passwordEncoder.matches(password, user.getPassword());
+        return passwordEncoder.matches(password, user.getPassword()) && user.isIscheck();
     }
 
     @Override

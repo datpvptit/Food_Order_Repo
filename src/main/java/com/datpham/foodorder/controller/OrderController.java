@@ -43,6 +43,19 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority('SUPERADMIN')")
+    @GetMapping("/get-all-to-serve")
+    public ResponseEntity<?> getAllOrderToServe(){
+        ResponseData responseData = new ResponseData();
+        responseData.setData(orderService.getAllToServe());
+        if(responseData.getData() != null){
+            responseData.setSuccess(true);
+        }else{
+            responseData.setDesc("Can't get the order needing to serve list");
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('SUPERADMIN')")
     @GetMapping("/get-detail/{id}")
     public ResponseEntity<?> getDetail(@PathVariable(name = "id") Integer id){
         ResponseData responseData = new ResponseData();
@@ -52,6 +65,14 @@ public class OrderController {
         }else{
             responseData.setDesc("Can't get the order list");
         }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('SUPERADMIN')")
+    @PutMapping("/serve/{id}")
+    public ResponseEntity<?> serveOrder(@PathVariable(name = "id") Integer id){
+        ResponseData responseData = new ResponseData();
+        responseData.setSuccess(orderService.serveOrder(id));
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 }

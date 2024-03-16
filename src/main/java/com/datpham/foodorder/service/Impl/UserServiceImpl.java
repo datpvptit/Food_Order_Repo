@@ -6,6 +6,7 @@ import com.datpham.foodorder.dto.RegisterDTO;
 import com.datpham.foodorder.entities.Role;
 import com.datpham.foodorder.entities.RoleName;
 import com.datpham.foodorder.entities.Users;
+import com.datpham.foodorder.payload.Reponse.UserReponse;
 import com.datpham.foodorder.service.UserService;
 import com.datpham.foodorder.repository.RoleRepository;
 import com.datpham.foodorder.repository.UserRepository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -45,6 +47,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public Boolean deleteAccount(Integer id) {
+        try {
+            userRepository.deleteById(id);
+            return true;
+        }catch (RuntimeException e){
+            throw new RuntimeException("Error delete accout");
+        }
+    }
+
+    @Override
+    @Transactional
+    public Boolean confirmAccount(Integer id) {
+        try {
+            Users users = userRepository.findById(id).orElse(null);
+            users.setIscheck(true);
+            userRepository.save(users);
+            return true;
+        }catch (RuntimeException e){
+            throw new RuntimeException("Error confirm accout");
+        }
+    }
+
+
+    @Override
+    @Transactional
     public Users saverUser(Users users) {
         return userRepository.save(users);
     }
@@ -52,6 +80,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users getByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public List<UserReponse> getAllUser() {
+        List<Users> usersList = userRepository.findAll();
+        if (usersList.isEmpty()){
+            return null;
+        }
+        List<UserReponse> userReponseList = new ArrayList<>();
+        for(Users users : usersList){
+            UserReponse userReponse = new UserReponse();
+            userReponse.setId(users.getId());
+            userReponse.setEmail(users.getEmail());
+            userReponse.setFullName(users.getFulname());
+            userReponse.setStatus(users.isIscheck());
+            List<Role> roles = users.getRoles();
+            String roleNamesString = roles.stream()
+                    .map(Role::getRoleName) // Chuyển đổi từ Role sang roleName
+                    .collect(Collectors.joining("/"));
+            if(roleNamesString.contains("SUPERADMIN")) continue;
+            userReponse.setRole(roleNamesString);
+            userReponseList.add(userReponse);
+        }
+        return userReponseList;
     }
 
     @Override
